@@ -46,7 +46,7 @@ export const confirmSale = createAsyncThunk(
         subTotalAmt: cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
         totalAmt: cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0) - (discount?.value || 0),
         paymentMethod,
-        customer: Object.values(customer).some((value) => value?.trim()) ? customer : undefined,
+        customerInfo: Object.values(customer).some((value) => value?.trim()) ? customer : null,
       });
 
       // The backend already decremented stock and wrote the SALE /

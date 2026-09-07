@@ -34,19 +34,18 @@ import {
   PanelTitle,
 } from "../../../styles/common";
 
+
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing(6)};
+  gap: ${({ theme }) => theme.spacing(5)};
   width: 100%;
-  height: 100%;
 `;
 
 const SplitLayout = styled.div`
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: ${({ theme }) => theme.spacing(6)};
-  align-items: start;
+  gap: 0;
+  align-items: stretch;
   flex: 1;
   min-height: 0;
 
@@ -58,43 +57,29 @@ const SplitLayout = styled.div`
 const SearchColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing(5)};
+  gap: ${({ theme }) => theme.spacing(4)};
+  padding-right: ${({ theme }) => theme.spacing(6)};
   min-width: 0;
 `;
 
 const ProductGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: ${({ theme }) => theme.spacing(4)};
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: ${({ theme }) => theme.spacing(3)};
 `;
 
-// Sticky so the cart totals and Checkout button stay reachable without
-// scrolling, no matter how many products are on screen (per spec: "Sticky
-// cart totals").
 const CartColumn = styled.div`
-  position: sticky;
-  top: ${({ theme }) => theme.spacing(6)};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  box-shadow: ${({ theme }) => theme.shadow.card};
-  padding: ${({ theme }) => theme.spacing(6)};
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing(4)};
-  max-height: calc(100vh - 140px);
+  min-height: 0;
+  position: sticky;
+  top: 40px;
 
   ${() => media.tabletDown`
-    position: static;
-    max-height: none;
+    border-left: 0;
+    border-top: 1px solid ${({ theme }) => theme.colors.border};
+    top: auto;
   `}
-`;
-
-const CartTitle = styled.h2`
-  margin: 0;
-  font-size: ${({ theme }) => theme.font.size.lg};
-  font-weight: ${({ theme }) => theme.font.weight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
 const CartItemsList = styled.div`
@@ -103,19 +88,38 @@ const CartItemsList = styled.div`
   overflow-y: auto;
 `;
 
-const SummaryBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing(4)};
-  padding-top: ${({ theme }) => theme.spacing(2)};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
 const ValidationNotice = styled.p`
   margin: 0;
   font-size: ${({ theme }) => theme.font.size.xs};
   color: ${({ theme }) => theme.colors.danger};
   text-align: center;
+`;
+const PanelFooterContainer = styled(PanelFooter)`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing(3)};
+`;
+
+const PanelBodyContainer = styled(PanelBody)`
+  min-height: 460px;
+  overflow-y: auto;
+`;
+
+const PanelContainer = styled(Panel)`
+    height: auto;
+    max-height: 90vh;
+    min-width: 468px;
+  position: sticky;
+  top: 40px;
+  ${() => media.tabletDown`
+    position: static;
+  `}
+`;
+
+const CreateSalePageContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing(5)};
+  width: 100%;
 `;
 
 export default function CreateSalePage() {
@@ -195,81 +199,86 @@ export default function CreateSalePage() {
   };
 
   return (
-    <Content>
-      <PageHeader
-        title="New Sale"
-        subtitle="Search products and build the cart"
-        onBack={() => navigate("/sales")}
-      />
+    <CreateSalePageContainer>
+      <Content>
+        <PageHeader
+          title="New Sale"
+          subtitle="Search products and build the cart"
+          onBack={() => navigate("/sales")}
+        />
 
-      <SplitLayout>
-        <SearchColumn>
-          <PosProductSearchBar
-            ref={searchInputRef}
-            value={query}
-            onChange={setQuery}
-          />
-          {renderProductGrid()}
-        </SearchColumn>
-
+        <SplitLayout>
+          <SearchColumn>
+            <PosProductSearchBar
+              ref={searchInputRef}
+              value={query}
+              onChange={setQuery}
+            />
+            {renderProductGrid()}
+          </SearchColumn>
+        </SplitLayout>
+      </Content>
+      {cart.length > 0 && (
         <CartColumn>
+          <PanelContainer onClick={(event) => event.stopPropagation()}>
+            <PanelHeader>
+              <PanelTitle>Current Sale</PanelTitle>
+            </PanelHeader>
+            <PanelBodyContainer>
+              {/* {product.warnings.length > 0 && <ImportWarning warnings={product.warnings} />} */}
 
-          {cart.length && (
-            <Panel onClick={(event) => event.stopPropagation()}>
-              <PanelHeader>
-                <PanelTitle>Current Sale</PanelTitle>
-              </PanelHeader>
-              <PanelBody>
-                {/* {product.warnings.length > 0 && <ImportWarning warnings={product.warnings} />} */}
-
-                <CartItemsList>
-                  {cart.map((item) => (
-                    <CartItemRow
-                      key={item.productId}
-                      item={item}
-                      onIncrement={() =>
-                        dispatch(incrementCartItem(item.productId))
-                      }
-                      onDecrement={() =>
-                        dispatch(decrementCartItem(item.productId))
-                      }
-                      onChangeQuantity={(quantity) =>
-                        dispatch(
-                          setCartItemQuantity({
-                            productId: item.productId,
-                            quantity,
-                          }),
-                        )
-                      }
-                      onRemove={() => dispatch(removeCartItem(item.productId))}
-                    />
-                  ))}
-                </CartItemsList>
-              </PanelBody>
-              <PanelFooter>
-                <SaleSummary
-                  subtotal={subtotal}
-                  discountAmount={discountAmount}
-                  total={total}
-                />
-                {hasStockIssue && (
-                  <ValidationNotice role="alert">
-                    ⚠ Resolve insufficient stock before proceeding to checkout.
-                  </ValidationNotice>
-                )}
-                <Button
-                  type="button"
-                  $fullWidth
-                  disabled={!cartValid}
-                  onClick={() => navigate("/sales/checkout")}
-                >
-                  Proceed to Checkout
-                </Button>
-              </PanelFooter>
-            </Panel>
-          )}
+              <CartItemsList>
+                {cart.map((item) => (
+                  <CartItemRow
+                    key={item.productId}
+                    item={item}
+                    readonly={false}
+                    onIncrement={() =>
+                      dispatch(incrementCartItem(item.productId))
+                    }
+                    onDecrement={() =>
+                      dispatch(decrementCartItem(item.productId))
+                    }
+                    onChangeQuantity={(quantity) =>
+                      dispatch(
+                        setCartItemQuantity({
+                          productId: item.productId,
+                          quantity,
+                        }),
+                      )
+                    }
+                    onRemove={() => dispatch(removeCartItem(item.productId))}
+                  />
+                ))}
+              </CartItemsList>
+            </PanelBodyContainer>
+            <PanelFooterContainer>
+              {/* <SummaryBlock> */}
+              <SaleSummary
+                subtotal={subtotal}
+                discount={discount}
+                showDiscount={true}
+                discountAmount={discountAmount}
+                total={total}
+              />
+              {hasStockIssue && (
+                <ValidationNotice role="alert">
+                  ⚠ Resolve insufficient stock before proceeding to checkout.
+                </ValidationNotice>
+              )}
+              <Button
+                type="button"
+                $fullWidth
+                disabled={!cartValid}
+                onClick={() => navigate("/sales/checkout")}
+              >
+                Proceed to Checkout
+              </Button>
+              {/* </SummaryBlock> */}
+            </PanelFooterContainer>
+          </PanelContainer>
         </CartColumn>
-      </SplitLayout>
-    </Content>
+      )}
+    </CreateSalePageContainer>
   );
 }

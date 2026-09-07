@@ -2,7 +2,6 @@ export const PAYMENT_METHOD_OPTIONS = [
   { value: 'cash', label: 'Cash' },
   { value: 'upi', label: 'UPI' },
   { value: 'card', label: 'Card' },
-  { value: 'other', label: 'Other' },
 ] as const;
 
 export type PaymentMethod = (typeof PAYMENT_METHOD_OPTIONS)[number]['value'];
@@ -35,7 +34,7 @@ export interface SaleLineItem {
   productName: string;
   unitPrice: number;
   quantity: number;
-  lineTotal: number;
+  total: number;
 }
 
 /** Lightweight row shape for the Sales List table/cards. */
@@ -78,7 +77,7 @@ export interface CreateSaleRequest {
   subTotalAmt:number;
   totalAmt:number;
   paymentMethod: PaymentMethod;
-  customer?: CustomerDetails;
+  customerInfo?: CustomerDetails | null;
 }
 
 export interface SalesState {

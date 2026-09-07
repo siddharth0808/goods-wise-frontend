@@ -2,16 +2,19 @@ import styled from 'styled-components';
 import { PAYMENT_METHOD_OPTIONS, type PaymentMethod } from '../types/sale.types';
 
 const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: space-between;
   gap: ${({ theme }) => theme.spacing(3)};
 `;
 
 const Option = styled.button<{ $active: boolean }>`
   display: flex;
+  width: 100%;
   align-items: center;
   gap: ${({ theme }) => theme.spacing(3)};
-  padding: ${({ theme }) => theme.spacing(4)};
+  padding: ${({ theme }) => theme.spacing(2)};
   border-radius: ${({ theme }) => theme.radius.md};
   border: 1px solid ${({ theme, $active }) => ($active ? theme.colors.primary : theme.colors.border)};
   background: ${({ theme, $active }) => ($active ? theme.colors.primarySoft : theme.colors.surface)};

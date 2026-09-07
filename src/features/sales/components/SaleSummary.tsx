@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 import { formatSaleCurrency } from '../utils/formatSaleCurrency';
+import { setDiscount } from '../store/posSlice';
+import { useAppDispatch } from '../../../app/store/hooks';
+import { DiscountInput } from './DiscountInput';
+import type { Discount } from '../types/sale.types';
 
 const Rows = styled.div`
   display: flex;
@@ -47,18 +51,23 @@ const TotalValue = styled.span`
 
 interface SaleSummaryProps {
   subtotal: number;
+  discount?: Discount | null;
+  showDiscount:boolean
   discountAmount: number;
   total: number;
   totalLabel?: string;
 }
 
-export function SaleSummary({ subtotal, discountAmount, total, totalLabel = 'Total' }: SaleSummaryProps) {
+export function SaleSummary({ subtotal, discount, showDiscount ,discountAmount, total, totalLabel = 'Total' }: SaleSummaryProps) {
+    const dispatch = useAppDispatch();
+  
   return (
     <Rows>
       <Row>
         <Label>Subtotal</Label>
         <Value>{formatSaleCurrency(subtotal)}</Value>
       </Row>
+         {showDiscount && <DiscountInput discount={discount} onApply={(value) => dispatch(setDiscount(value))} />}
       <Row>
         <Label>Discount</Label>
         <DiscountValue>{discountAmount > 0 ? `- ${formatSaleCurrency(discountAmount)}` : formatSaleCurrency(0)}</DiscountValue>

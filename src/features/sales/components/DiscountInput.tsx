@@ -80,7 +80,7 @@ const ApplyButton = styled.button`
 `;
 
 interface DiscountInputProps {
-  discount: Discount | null;
+  discount?: Discount | null;
   onApply: (discount: Discount | null) => void;
 }
 
@@ -125,6 +125,10 @@ export function DiscountInput({ discount, onApply }: DiscountInputProps) {
             placeholder="0"
             value={rawValue}
             onChange={(event) => setRawValue(event.target.value)}
+            onAbort={()=> {
+              setRawValue('')
+              handleApply()
+            }}
             aria-label="Discount value"
           />
         </InputWrapper>

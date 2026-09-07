@@ -46,8 +46,10 @@ const PricingRow = styled.div`
 const Price = styled.span`
   font-size: ${({ theme }) => theme.font.size.lg};
   font-weight: ${({ theme }) => theme.font.weight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${({ theme }) => theme.colors.primary};
 `;
+
+
 
 interface ProductGridCardProps {
   name: string;

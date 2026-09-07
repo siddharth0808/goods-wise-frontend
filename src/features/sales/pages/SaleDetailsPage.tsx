@@ -1,13 +1,11 @@
-import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { PageHeader } from '../../../components/layout/PageHeader';
 import { Button } from '../../../components/common/Button';
-import { Loader } from '../../../components/common/Loader';
 import { ErrorState } from '../../../components/common/ErrorState';
 import { StatusBadge } from '../../../components/common/StatusBadge';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
-import { fetchSaleById, voidSale } from '../store/salesSlice';
+import {  voidSale } from '../store/salesSlice';
 import { SaleSummary } from '../components/SaleSummary';
 import { formatSaleCurrency } from '../utils/formatSaleCurrency';
 import { formatDate } from '../../../utils/formatters';
@@ -130,33 +128,34 @@ export default function SaleDetailsPage() {
   const { saleId = '' } = useParams<{ saleId: string }>();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { activeSale, activeSaleStatus, activeSaleError, isVoiding, voidError } = useAppSelector(
+  const {isVoiding, voidError, sales } = useAppSelector(
     (state) => state.sales
   );
+  let currentsale:any = sales.find((s) => s.id === saleId);
+  // useEffect(() => {
+  //   // If this sale was just completed by the POS flow, it's already primed
+  //   // into `activeSale` - no need to refetch it immediately after creation.
+  //   if (!activeSale || activeSale.id !== saleId) {
+  //     currentsale = sales.find((s) => s.id === saleId);
+  //     // dispatch(fetchSaleById(saleId));
+  //   }
+  // }, [saleId, activeSale, sales,dispatch]);
 
-  useEffect(() => {
-    // If this sale was just completed by the POS flow, it's already primed
-    // into `activeSale` - no need to refetch it immediately after creation.
-    if (!activeSale || activeSale.id !== saleId) {
-      dispatch(fetchSaleById(saleId));
-    }
-  }, [saleId, activeSale, dispatch]);
+  // if (activeSaleStatus === 'loading' || (activeSaleStatus === 'idle' && !activeSale)) {
+  //   return <Loader label="Loading sale…" />;
+  // }
 
-  if (activeSaleStatus === 'loading' || (activeSaleStatus === 'idle' && !activeSale)) {
-    return <Loader label="Loading sale…" />;
-  }
+  // if (activeSaleStatus === 'failed' || !activeSale) {
+  //   return (
+  //     <ErrorState
+  //       message={activeSaleError ?? 'Sale not found.'}
+  //       onRetry={() => dispatch(fetchSaleById(saleId))}
+  //     />
+  //   );
+  // }
 
-  if (activeSaleStatus === 'failed' || !activeSale) {
-    return (
-      <ErrorState
-        message={activeSaleError ?? 'Sale not found.'}
-        onRetry={() => dispatch(fetchSaleById(saleId))}
-      />
-    );
-  }
-
-  const sale = activeSale;
-  const isVoided = sale.status === 'VOIDED';
+  const sale = currentsale;
+  const isVoided = sale?.status === 'VOIDED';
 
   return (
     <Content>
@@ -182,7 +181,7 @@ export default function SaleDetailsPage() {
       <Card>
         <SectionTitle>Items</SectionTitle>
         <div>
-          {sale.items.map((item) => (
+          {sale.items.map((item:any) => (
             <ItemRow key={item.id}>
               <ItemTextGroup>
                 <ItemName>{item.productName}</ItemName>
@@ -190,7 +189,7 @@ export default function SaleDetailsPage() {
                   {item.quantity} × {formatSaleCurrency(item.unitPrice)}
                 </ItemMeta>
               </ItemTextGroup>
-              <ItemTotal>{formatSaleCurrency(item.lineTotal)}</ItemTotal>
+              <ItemTotal>{formatSaleCurrency(item.total)}</ItemTotal>
             </ItemRow>
           ))}
         </div>
@@ -198,7 +197,7 @@ export default function SaleDetailsPage() {
 
       <Card>
         <SectionTitle>Summary</SectionTitle>
-        <SaleSummary subtotal={sale.subTotalAmt} discountAmount={sale.discountAmount} total={sale.totalAmt} />
+        <SaleSummary subtotal={sale.subTotalAmt} showDiscount={false} discountAmount={sale.discountAmount} total={sale.totalAmt} />
       </Card>
 
       <Actions>

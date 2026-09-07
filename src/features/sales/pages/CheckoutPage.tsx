@@ -6,10 +6,9 @@ import { Button } from '../../../components/common/Button';
 import { FormField } from '../../../components/common/FormField';
 import { Input } from '../../../components/common/Input';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
-import { clearCreateError, confirmSale, decrementCartItem, incrementCartItem, removeCartItem, resetPos, setCartItemQuantity, setCustomerDetails, setDiscount, setPaymentMethod } from '../store/posSlice';
+import { clearCreateError, confirmSale, decrementCartItem, incrementCartItem, removeCartItem, resetPos, setCartItemQuantity, setCustomerDetails, setPaymentMethod } from '../store/posSlice';
 import { CartItemRow } from '../components/CartItemRow';
 import { SaleSummary } from '../components/SaleSummary';
-import { DiscountInput } from '../components/DiscountInput';
 import { PaymentMethodSelector } from '../components/PaymentMethodSelector';
 import { SaleConfirmationDialog } from '../components/SaleConfirmationDialog';
 import { SaleSuccessScreen } from '../components/SaleSuccessScreen';
@@ -19,6 +18,7 @@ import { calculateDiscountAmount, calculateSubtotal, calculateTotal, calculateTo
 import { media } from '../../../styles/breakpoints';
 import type { ProcessingStep } from '../../import/types/import.types';
 import { isValidEmail, isValidPhone } from '../../../utils/validation';
+import { ControlsGroup, ItemDetails, ItemName, LineItem } from '../../../styles/common';
 
 const Content = styled.div`
   display: flex;
@@ -69,6 +69,11 @@ const RightColumn = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing(6)};
 `;
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing(6)};
+`;
 
 const PaymentNotice = styled.p`
   margin: 0;
@@ -80,6 +85,16 @@ const CustomerFields = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing(4)};
 `;
+const HeaderContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing(2)};
+  padding: ${({ theme }) => theme.spacing(2)} 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  }`
 
 const PROCESSING_STEP_LABELS = ['Validating products', 'Checking stock', 'Completing sale'];
 
@@ -216,24 +231,34 @@ export default function CheckoutPage() {
       <PageHeader title="Checkout" subtitle="Review the sale before completing payment" onBack={() => navigate('/sales/new')} />
 
       <SplitLayout>
-        <Card>
-          <SectionTitle>Order Summary ({cart.length} items)</SectionTitle>
-          <div>
-            <div> Product</div>
-            <div> Quantity</div>
-            <div> Price</div>
-            <div> Total</div>
+        <LeftColumn>
+          <Card>
+            <SectionTitle>Order Summary ({cart.length} items)</SectionTitle>
+            <HeaderContainer>
+            <ItemDetails><ItemName title="Product">Product</ItemName></ItemDetails>
+            <ControlsGroup>
+              
+            <LineItem>Unit Price</LineItem>
+            <LineItem>Quantity</LineItem>
+            <LineItem>Total</LineItem>
+                        </ControlsGroup>
+
+            </HeaderContainer>
+
             {cart.map((item) => (
-              <>
-                <div>{item.productName}</div>
-                <div>{item.quantity}</div>
-                <div>${item.unitPrice.toFixed(2)}</div>
-                <div>${(item.unitPrice * item.quantity).toFixed(2)}</div>
-              </>
+              <CartItemRow
+                key={item.productId}
+                item={item}
+                readonly={true}
+                onIncrement={() => dispatch(incrementCartItem(item.productId))}
+                onDecrement={() => dispatch(decrementCartItem(item.productId))}
+                onChangeQuantity={(quantity) => dispatch(setCartItemQuantity({ productId: item.productId, quantity }))}
+                onRemove={() => dispatch(removeCartItem(item.productId))}
+              />
             ))}
-          </div>
         </Card>
 
+        </LeftColumn>
         <RightColumn>
           <Card>
             <SectionTitle>Customer Details (Optional)</SectionTitle>
@@ -275,14 +300,10 @@ export default function CheckoutPage() {
             </CustomerFields>
           </Card>
 
-          <Card>
-            <SectionTitle>Discount</SectionTitle>
-            <DiscountInput discount={discount} onApply={(value) => dispatch(setDiscount(value))} />
-          </Card>
 
           <Card>
-            <SectionTitle>Payment Method</SectionTitle>
-            <PaymentMethodSelector
+            <SectionTitle>Total</SectionTitle>
+             <PaymentMethodSelector
               value={paymentMethod}
               onChange={(method) => {
                 setPaymentMissing(false);
@@ -290,11 +311,9 @@ export default function CheckoutPage() {
               }}
             />
             {paymentMissing && <PaymentNotice role="alert">Select a payment method to continue.</PaymentNotice>}
-          </Card>
-
-          <Card>
-            <SectionTitle>Final Total</SectionTitle>
-            <SaleSummary subtotal={subtotal} discountAmount={discountAmount} total={total} totalLabel="Final Total" />
+          
+            <SaleSummary subtotal={subtotal} showDiscount={false} discountAmount={discountAmount} total={total} totalLabel="Final Total" />
+            
             <Button type="button" $fullWidth disabled={!cartValid} onClick={handleOpenConfirm}>
               Complete Sale
             </Button>

@@ -66,7 +66,9 @@ export default function SalesListPage() {
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
 
   useEffect(() => {
-    dispatch(fetchSales());
+    if (status === 'idle') {
+      dispatch(fetchSales());
+    }
   }, [dispatch]);
 
   const filteredSales = useMemo(() => {
