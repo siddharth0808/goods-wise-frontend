@@ -94,7 +94,7 @@ export default function EditProductPage() {
         rate: Number(product?.rate),
         currentStock: Number(product?.currentStock),
         minimumStock: Number(product?.minimumStock),
-        expiryDate: new Date(product?.expiryDate || '').toISOString().split('T')[0],
+        expiryDate: product?.expiryDate ? new Date(product?.expiryDate || '').toISOString().split('T')[0] : product?.expiryDate,
         manufacturer: product?.manufacturer || "",
         batchNumber: product?.batchNumber || "",
         hsn: Number(product?.hsn) || 0,

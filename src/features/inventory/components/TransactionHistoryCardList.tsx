@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import type { InventoryTransaction } from '../types/transaction.types';
 import { getTransactionLabel, getTransactionTone } from '../types/transaction.types';
 import { StatusBadge } from '../../../components/common/StatusBadge';
-import { formatDate, formatSignedQuantity } from '../../../utils/formatters';
+import { formatDate } from '../../../utils/formatters';
 import { media } from '../../../styles/breakpoints';
 
 const List = styled.div`
@@ -69,8 +69,8 @@ export function TransactionHistoryCardList({ transactions }: TransactionHistoryC
             <StatusBadge tone={getTransactionTone(transaction.type)}>
               {getTransactionLabel(transaction.type)}
             </StatusBadge>
-            <QuantityText $positive={transaction.quantity > 0}>
-              {formatSignedQuantity(transaction.quantity)}
+            <QuantityText $positive={Number(transaction.newStock) > Number(transaction.previousStock)}>
+                {Number(transaction.newStock) > Number(transaction.previousStock) ? `+${transaction.quantity}` : `-${transaction.quantity}`}
             </QuantityText>
           </TopRow>
           <StockRow>

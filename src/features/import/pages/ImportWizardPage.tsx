@@ -33,6 +33,7 @@ import { EditDetectedProductPanel } from '../components/EditDetectedProductPanel
 import { FormError } from '../../auth/components/AuthCard.styles';
 import type { ProcessingStep } from '../types/import.types';
 import { media } from '../../../styles/breakpoints';
+import { InvoiceReviewCardList } from '../components/InvoiceReviewCardList';
 
 const Content = styled.div`
   display: flex;
@@ -355,6 +356,11 @@ export default function ImportWizardPage() {
           onEdit={setEditingProductId}
           onRemove={(id) => dispatch(removeProduct(id))}
         />
+        <InvoiceReviewCardList
+        products={importState?.invoice.products}
+          onEdit={setEditingProductId}
+          onRemove={(id) => dispatch(removeProduct(id))}
+        />
 
         {importState.confirmError && <FormError role="alert">{importState.confirmError}</FormError>}
 
@@ -416,7 +422,7 @@ export default function ImportWizardPage() {
             invoice={importState.invoice}
             onViewInventory={() => {
               dispatch(resetImportWorkflow());
-              navigate('/inventory');
+              navigate('/inventory', {replace: true});
             }}
             onViewImportDetails={() => {
               dispatch(resetImportWorkflow());

@@ -75,6 +75,20 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
+export const deleteProduct = createAsyncThunk(
+  'inventory/deleteProduct',
+  async (
+    { productId }: { productId: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await productRepository.deleteProduct(productId);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete product');
+    }
+  }
+);
+
 const inventorySlice = createSlice({
   name: 'inventory',
   initialState,
@@ -135,6 +149,18 @@ const inventorySlice = createSlice({
       .addCase(updateProduct.rejected, (state, action) => {
         state.isUpdating = false;
         state.updateError = (action.payload as string) ?? 'Failed to update product';
+      })
+      .addCase(deleteProduct.pending, (state) => {
+        state.isUpdating = true;
+        state.updateError = null;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        state.products = state.products.filter(product => product.id !== action.meta.arg.productId);
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.updateError = (action.payload as string) ?? 'Failed to delete product';
       })
       // Dispatched by transactionSlice once a stock adjustment is saved -
       // keeps the product list/detail cache in sync without a refetch.

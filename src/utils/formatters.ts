@@ -46,7 +46,7 @@ export function formatSignedQuantity(quantity: number): string {
 }
 
 export function expiryDate(date: string) {
-  const [month, year] = date.split("/");
+  const [month, year] = date.includes("/") ? date.split("/") : date.split('-');
 
   const fullDate = new Date(2000 + Number(year), Number(month) - 1, 1).toISOString();
 

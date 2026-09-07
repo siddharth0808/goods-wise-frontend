@@ -19,7 +19,13 @@ const Bar = styled.div`
   ${() => media.mobile`
     flex-direction: column;
     align-items: flex-start;
+    bottom: 67px;
   `}
+
+  ${() => media.tabletDown`
+    bottom: 67px;
+  `}
+
 `;
 
 const TotalsRow = styled.div`

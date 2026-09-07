@@ -3,6 +3,7 @@ import type { InventoryTransaction } from '../types/transaction.types';
 import { getTransactionLabel, getTransactionTone } from '../types/transaction.types';
 import { StatusBadge } from '../../../components/common/StatusBadge';
 import { formatDate } from '../../../utils/formatters';
+import { media } from '../../../styles/breakpoints';
 
 const TableWrapper = styled.div`
   width: 100%;
@@ -12,6 +13,9 @@ const TableWrapper = styled.div`
   box-shadow: ${({ theme }) => theme.shadow.card};
   overflow: hidden;
   overflow-x: auto;
+  ${() => media.tabletDown`
+      display: none;
+    `}
 `;
 
 const Table = styled.table`

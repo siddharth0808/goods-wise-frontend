@@ -1,10 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import type { Product } from "../types/product.types";
-import { StatusBadge } from "../../../components/common/StatusBadge";
-import { formatCurrency, formatDate } from "../../../utils/formatters";
-import { getStockStatusMeta } from "../utils/stockStatus";
 import { media } from "../../../styles/breakpoints";
+import type { InvoiceProducts } from "../types/import.types";
+import { ProductMatchBadge } from "./ProductMatchBadge";
+import { formatCurrency, formatDate } from "../../../utils/formatters";
+import { RemoveIcon } from "../../../components/common/Icons/Icons";
 
 const CardList = styled.div`
   display: none;
@@ -86,25 +85,22 @@ const DetailValue = styled.span`
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
-interface ProductCardListProps {
-  products: Product[];
+interface InvoiceRevieCardProps {
+  products: InvoiceProducts[];
+  onEdit: (id: string) => void;
+  onRemove: (id: string) => void;
 }
 
-export function ProductCardList({ products }: ProductCardListProps) {
-  const navigate = useNavigate();
-
+export function InvoiceReviewCardList({
+  products,
+  onEdit,
+  onRemove,
+}: InvoiceRevieCardProps) {
   return (
     <CardList>
       {products.map((product) => {
-        const statusMeta = getStockStatusMeta(
-          product.currentStock,
-          product.minimumStock,
-        );
         return (
-          <Card
-            key={product.id}
-            onClick={() => navigate(`/products/${product.id}`)}
-          >
+          <Card key={product.id} onClick={() => onEdit(product.id)}>
             <TopRow>
               <NameBlock>
                 <Name>{product.name}</Name>
@@ -119,28 +115,42 @@ export function ProductCardList({ products }: ProductCardListProps) {
                 </Meta>
               </NameBlock>
               <BadgeRow>
-                <StatusBadge tone={statusMeta.tone}>
-                  {statusMeta.label}
-                </StatusBadge>
+                <ProductMatchBadge matchType={product.status} />
+                <div onClick={() => onRemove(product.id)}>
+                  <RemoveIcon></RemoveIcon>
+                </div>
               </BadgeRow>
             </TopRow>
             <DetailsGrid>
               <DetailItem>
                 <DetailLabel>MRP.</DetailLabel>
-                <DetailValue>{formatCurrency(product.mrp)}</DetailValue>
+                <DetailValue>{formatCurrency(product?.mrp || 0)}</DetailValue>
               </DetailItem>
               <DetailItem>
                 <DetailLabel>Rate</DetailLabel>
                 <DetailValue>{formatCurrency(product.rate)}</DetailValue>
               </DetailItem>
               <DetailItem>
-                <DetailLabel>Current Stock</DetailLabel>
-                <DetailValue>{product.currentStock}</DetailValue>
+                <DetailLabel>Quantity.</DetailLabel>
+                <DetailValue>{product.quantity}</DetailValue>
               </DetailItem>
               <DetailItem>
-                <DetailLabel>Min Stock</DetailLabel>
-                <DetailValue>{product.minimumStock}</DetailValue>
+                <DetailLabel>Current Qty.</DetailLabel>
+                <DetailValue>{product.currentQuantity}</DetailValue>
               </DetailItem>
+              <DetailItem>
+                  <DetailLabel>Expected Qty.</DetailLabel>
+                  <DetailValue>
+                    {product.currentQuantity + product.quantity}
+                  </DetailValue>
+                </DetailItem>
+                <DetailItem>
+                  <DetailLabel>Total Amt.</DetailLabel>
+                  <DetailValue>
+                    {product.amount}
+                  </DetailValue>
+                </DetailItem>
+             
             </DetailsGrid>
           </Card>
         );

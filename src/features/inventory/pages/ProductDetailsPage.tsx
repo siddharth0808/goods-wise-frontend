@@ -7,7 +7,7 @@ import { Loader } from '../../../components/common/Loader';
 import { ErrorState } from '../../../components/common/ErrorState';
 import { StatusBadge } from '../../../components/common/StatusBadge';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
-import { fetchProductById, fetchProducts } from '../store/inventorySlice';
+import { deleteProduct, fetchProductById, fetchProducts } from '../store/inventorySlice';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import { getStockStatusMeta } from '../utils/stockStatus';
 import {
@@ -25,6 +25,7 @@ import {
   StatValue,
   TwoColumnLayout,
 } from '../components/DetailCard.styles';
+import { AdjustIcon, EditIcon, HistoryIcon, RemoveIcon } from '../../../components/common/Icons/Icons';
 
 const Content = styled.div`
   display: flex;
@@ -80,18 +81,22 @@ export default function ProductDetailsPage() {
         onBack={() => navigate('/inventory')}
         action={
           <HeaderActions>
-            <Button type="button" $variant="secondary" onClick={() => navigate(`/products/${product.id}/history`)}>
-              View History
+            <Button title="View History" type="button" $variant="secondary" onClick={() => navigate(`/products/${product.id}/history`)}>
+              <HistoryIcon />
             </Button>
             <Button
+              title="Adjust Stock"
               type="button"
               $variant="secondary"
               onClick={() => navigate(`/products/${product.id}/adjust-stock`)}
             >
-              Adjust Stock
+              <AdjustIcon />
             </Button>
-            <Button type="button" onClick={() => navigate(`/products/${product.id}/edit`)}>
-              Edit Product
+            <Button title="Edit Product" type="button" onClick={() => navigate(`/products/${product.id}/edit`)}>
+              <EditIcon />
+            </Button>
+            <Button title="Delete Product" type="button" $variant="danger" onClick={() =>{dispatch(deleteProduct({ productId: product.id || "" }));  navigate(`/inventory`)}}>
+              <RemoveIcon />
             </Button>
           </HeaderActions>
         }
@@ -109,10 +114,6 @@ export default function ProductDetailsPage() {
               <InfoLabel>Batch No.</InfoLabel>
               <InfoValue>{product.batchNumber || '—'}</InfoValue>
             </InfoRow>
-            {/* <InfoRow>
-              <InfoLabel>Barcode</InfoLabel>
-              <InfoValue>{product.barcode || '—'}</InfoValue>
-            </InfoRow> */}
             <InfoRow>
               <InfoLabel>HSN</InfoLabel>
               <InfoValue>{product.hsn || '—'}</InfoValue>

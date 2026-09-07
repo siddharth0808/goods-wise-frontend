@@ -89,7 +89,10 @@ function toFormValues(product: InvoiceProducts): any {
     quantity: String(product.quantity),
     rate: String(product.rate),
     mrp: String(product.mrp),
-    amount: String(product.amount)
+    amount: String(product.amount),
+    expiryDate: product?.expiryDate ? new Date(product?.expiryDate || '').toISOString().split('T')[0] : '',
+    batchNumber: product?.batchNumber || '',
+    manufacturer: product?.manufacturer || '',
   };
 }
 
@@ -113,6 +116,7 @@ export function EditDetectedProductPanel({
     setValues((prev) => ({ ...prev, [field]: value }));
   };
 
+  const isExisting =  product.status  === 'EXISTING';
   const handleSave = () => {
     const validationErrors = validateFields(values, {
       name: (value) => (!isRequired(value) ? 'Product Name is required.' : undefined),
@@ -120,7 +124,6 @@ export function EditDetectedProductPanel({
       rate: (value) => (!isNonNegativeNumber(value) ? 'Enter a valid rate.' : undefined),
       mrp: (value) => (!isNonNegativeNumber(value) ? 'Enter a valid MRP.' : undefined),
       amount: (value) => (!isNonNegativeNumber(value) ? 'Enter a valid amount.' : undefined),
-
     });
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
@@ -131,6 +134,9 @@ export function EditDetectedProductPanel({
       rate: Number(values.rate),
       mrp: Number(values.mrp),
       amount: Number(values.amount),
+      expiryDate: new Date(values.expiryDate).valueOf(),
+      batchNumber: values.batchNumber,
+      manufacturer: values.manufacturer,
     });
   };
 
@@ -157,7 +163,7 @@ export function EditDetectedProductPanel({
             values={values}
             errors={errors}
             onChange={handleChange}
-            disableQuantity={false}
+            disableQuantity={isExisting}
           />
         </Body>
         <Footer>

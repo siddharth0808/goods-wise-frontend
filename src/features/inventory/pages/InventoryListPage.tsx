@@ -13,6 +13,7 @@ import { EmptyInventory } from '../components/EmptyInventory';
 import { FilterChips } from '../components/FilterChips';
 import { AddInventoryMenu } from '../../import/components/AddInventoryMenu';
 import { getStockStatus } from '../../../utils/formatters';
+import { media } from '../../../styles/breakpoints';
 
 const Content = styled.div`
   display: flex;
@@ -27,6 +28,15 @@ const FilterBar = styled.div`
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing(4)};
   flex-wrap: wrap;
+  position: sticky;
+  top: 8px;
+  z-index: 10;
+  padding: ${({ theme }) => theme.spacing(1)} 0;
+  background: ${({ theme }) => theme.colors.background};
+
+  ${() => media.tabletDown`
+    top: 100px;
+  `}
 `;
 
 const SearchWrapper = styled.div`
