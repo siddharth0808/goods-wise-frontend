@@ -13,6 +13,13 @@ export function getPaymentMethodLabel(method: PaymentMethod): string {
 
 export type SaleStatus = 'COMPLETED' | 'VOIDED';
 
+/** Optional details captured for the customer associated with a sale. */
+export interface CustomerDetails {
+  name?: string;
+  phone?: string;
+  email?: string;
+}
+
 export type DiscountType = 'fixed' | 'percentage';
 
 export interface Discount {
@@ -49,6 +56,7 @@ export interface Sale extends SaleSummary {
   subTotalAmt: number;
   discount: Discount | null;
   discountAmount: number;
+  customer?: CustomerDetails;
   paymentLabel?: string;
   cashierMode?: string;
 }
@@ -70,6 +78,7 @@ export interface CreateSaleRequest {
   subTotalAmt:number;
   totalAmt:number;
   paymentMethod: PaymentMethod;
+  customer?: CustomerDetails;
 }
 
 export interface SalesState {
@@ -107,6 +116,7 @@ export interface PosState {
   subTotalAmt:number| null;
   totalAmt:number| null;
   paymentMethod: PaymentMethod | null;
+  customer: CustomerDetails;
 
   createStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
   createError: string | null;
