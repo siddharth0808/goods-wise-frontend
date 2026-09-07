@@ -1,6 +1,6 @@
 
 
-Design the DESKTOP UI/UX for Sprint 3 of an existing inventory management application called "GoodsWise".
+Design the DESKTOP UI for Sprint 3 of an existing inventory management application called "InventorySatck".
 
 IMPORTANT:
 This is an extension of an existing application.
