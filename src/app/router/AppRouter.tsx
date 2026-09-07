@@ -16,6 +16,9 @@ import InventoryHistoryPage from '../../features/inventory/pages/InventoryHistor
 import ImportWizardPage from '../../features/import/pages/ImportWizardPage';
 import ImportHistoryPage from '../../features/import/pages/ImportHistoryPage';
 import ProfilePage from '../../features/profile/pages/ProfilePage';
+import SalesListPage from '../../features/sales/pages/SalesListPage';
+import NewSalePage from '../../features/sales/pages/NewSalePage';
+import CheckoutPage from '../../features/sales/pages/CheckoutPage';
 import { useAppSelector } from '../store/hooks';
 
 /** Sends "/" to the right authenticated destination once we know it. */
@@ -130,6 +133,36 @@ export function AppRouter() {
           <BusinessSetupRoute>
             <AppLayout>
               <ProfilePage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <SalesListPage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales/new"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <NewSalePage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales/checkout"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <CheckoutPage />
             </AppLayout>
           </BusinessSetupRoute>
         }
