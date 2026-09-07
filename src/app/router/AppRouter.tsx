@@ -6,6 +6,8 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import SignupPage from '../../features/auth/pages/SignupPage';
 import EmailVerificationPage from '../../features/auth/pages/EmailVerificationPage';
+import ForgotPasswordPage from '../../features/auth/pages/ForgotPasswordPage';
+import ResetPasswordPage from '../../features/auth/pages/ResetPasswordPage';
 import BusinessSetupPage from '../../features/business/pages/BusinessSetupPage';
 import InventoryListPage from '../../features/inventory/pages/InventoryListPage';
 import AddProductPage from '../../features/inventory/pages/AddProductPage';
@@ -15,6 +17,10 @@ import AdjustStockPage from '../../features/inventory/pages/AdjustStockPage';
 import InventoryHistoryPage from '../../features/inventory/pages/InventoryHistoryPage';
 import ImportWizardPage from '../../features/import/pages/ImportWizardPage';
 import ImportHistoryPage from '../../features/import/pages/ImportHistoryPage';
+import SalesListPage from '../../features/sales/pages/SalesListPage';
+import CreateSalePage from '../../features/sales/pages/CreateSalePage';
+import CheckoutPage from '../../features/sales/pages/CheckoutPage';
+import SaleDetailsPage from '../../features/sales/pages/SaleDetailsPage';
 import ProfilePage from '../../features/profile/pages/ProfilePage';
 import { useAppSelector } from '../store/hooks';
 
@@ -49,6 +55,22 @@ export function AppRouter() {
         element={
           <PublicRoute>
             <EmailVerificationPage />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPasswordPage />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <PublicRoute>
+            <ResetPasswordPage />
           </PublicRoute>
         }
       />
@@ -150,6 +172,46 @@ export function AppRouter() {
           <BusinessSetupRoute>
             <AppLayout>
               <ImportHistoryPage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <SalesListPage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales/new"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <CreateSalePage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales/checkout"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <CheckoutPage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales/:saleId"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <SaleDetailsPage />
             </AppLayout>
           </BusinessSetupRoute>
         }

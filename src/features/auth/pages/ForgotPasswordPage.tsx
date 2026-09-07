@@ -1,13 +1,12 @@
 import { useState, type FormEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card, PageContainer } from '../../../components/common/PageContainer';
 import { Logo } from '../../../components/layout/Logo';
 import { Button } from '../../../components/common/Button';
 import { Input } from '../../../components/common/Input';
-import { PasswordInput } from '../../../components/common/PasswordInput';
 import { FormField } from '../../../components/common/FormField';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
-import { clearAuthError, login } from '../store/authSlice';
+import { clearAuthError, requestPasswordReset } from '../store/authSlice';
 import { isRequired, isValidEmail, validateFields } from '../../../utils/validation';
 import {
   Actions,
@@ -17,30 +16,21 @@ import {
   AuthTitleBlock,
   Form,
   FormError,
-  FormSuccess,
   InlineLink,
   LinksRow,
 } from '../components/AuthCard.styles';
 
 interface FormValues {
   email: string;
-  password: string;
 }
 
-interface LocationState {
-  notice?: string;
-}
-
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-  const notice = (location.state as LocationState | null)?.notice;
-
   const isSubmitting = useAppSelector((state) => state.auth.isSubmitting);
   const authError = useAppSelector((state) => state.auth.error);
 
-  const [values, setValues] = useState<FormValues>({ email: '', password: '' });
+  const [values, setValues] = useState<FormValues>({ email: '' });
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
 
   const handleChange = (field: keyof FormValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,19 +47,17 @@ export default function LoginPage() {
         if (!isValidEmail(value)) return 'Enter a valid email address.';
         return undefined;
       },
-      password: (value) => (!isRequired(value) ? 'Password is required.' : undefined),
     });
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
-    if (isSubmitting) return; // Prevent duplicate submissions.
+    if (isSubmitting) return;
 
-    const result = await dispatch(login(values));
-    if (login.fulfilled.match(result)) {
-      // AuthenticatedRoute/BusinessSetupRoute will settle the exact
-      // destination once business status is fetched; go to a neutral
-      // authenticated URL and let the guards redirect appropriately.
-      navigate('/', { replace: true });
+    const result = await dispatch(requestPasswordReset(values.email));
+    if (requestPasswordReset.fulfilled.match(result)) {
+      // Pass the email via route state (never the URL/query string) so
+      // ResetPasswordPage can display it and use it in the confirm call.
+      navigate('/reset-password', { state: { email: values.email } });
     }
   };
 
@@ -79,12 +67,11 @@ export default function LoginPage() {
         <AuthHeader>
           <Logo />
           <AuthTitleBlock>
-            <AuthTitle>Welcome back</AuthTitle>
-            <AuthSubtitle>Sign in to manage your stock</AuthSubtitle>
+            <AuthTitle>Forgot your password?</AuthTitle>
+            <AuthSubtitle>Enter your email and we&apos;ll send you a reset code</AuthSubtitle>
           </AuthTitleBlock>
         </AuthHeader>
 
-        {notice && !authError && <FormSuccess role="status">{notice}</FormSuccess>}
         {authError && <FormError role="alert">{authError}</FormError>}
 
         <Form as="div">
@@ -93,41 +80,22 @@ export default function LoginPage() {
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="admin@inventorystack.co"
+              placeholder="admin@inventoryflow.co"
               value={values.email}
               onChange={handleChange('email')}
               $hasError={!!fieldErrors.email}
-            />
-          </FormField>
-          <FormField
-            label="Password"
-            htmlFor="password"
-            error={fieldErrors.password}
-            labelAction={
-              <InlineLink type="button" onClick={() => navigate('/forgot-password')}>
-                Forgot password?
-              </InlineLink>
-            }
-          >
-            <PasswordInput
-              id="password"
-              autoComplete="current-password"
-              placeholder="Enter your password"
-              value={values.password}
-              onChange={handleChange('password')}
-              hasError={!!fieldErrors.password}
             />
           </FormField>
         </Form>
 
         <Actions>
           <Button type="submit" $fullWidth disabled={isSubmitting}>
-            {isSubmitting ? 'Logging in…' : 'Log In'}
+            {isSubmitting ? 'Sending code…' : 'Send Reset Code'}
           </Button>
           <LinksRow>
-            <span>Don&apos;t have an account?</span>
-            <InlineLink type="button" onClick={() => navigate('/signup')}>
-              Sign Up
+            <span>Remembered your password?</span>
+            <InlineLink type="button" onClick={() => navigate('/login')}>
+              Log In
             </InlineLink>
           </LinksRow>
         </Actions>

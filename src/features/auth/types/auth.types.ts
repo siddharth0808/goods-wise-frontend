@@ -29,3 +29,9 @@ export interface ConfirmSignupParams {
   email: string;
   code: string;
 }
+
+export interface ConfirmPasswordResetParams {
+  email: string;
+  code: string;
+  newPassword: string;
+}

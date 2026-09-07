@@ -6,6 +6,7 @@ import type { Product } from '../../inventory/types/product.types';
 import { NewProductForm, type DetectedProductFormValues } from './NewProductForm';
 import { isNonNegativeNumber, isRequired, validateFields } from '../../../utils/validation';
 import { formatCurrency } from '../../../utils/formatters';
+import { Panel, PanelBody, PanelFooter, PanelHeader, PanelTitle } from '../../../styles/common';
 
 const Backdrop = styled.div`
   position: fixed;
@@ -14,37 +15,6 @@ const Backdrop = styled.div`
   z-index: 40;
   display: flex;
   justify-content: flex-end;
-`;
-
-const Panel = styled.div`
-  width: 100%;
-  max-width: 480px;
-  height: 100%;
-  background: ${({ theme }) => theme.colors.surface};
-  box-shadow: -8px 0 24px rgba(15, 23, 42, 0.08);
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-`;
-
-const Header = styled.div`
-  padding: ${({ theme }) => theme.spacing(6)};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const Title = styled.h2`
-  margin: 0;
-  font-size: ${({ theme }) => theme.font.size.xl};
-  font-weight: ${({ theme }) => theme.font.weight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const Body = styled.div`
-  flex: 1;
-  padding: ${({ theme }) => theme.spacing(6)};
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing(5)};
 `;
 
 const CurrentProductCard = styled.div`
@@ -75,12 +45,7 @@ const CurrentProductMeta = styled.span`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const Footer = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing(3)};
-  padding: ${({ theme }) => theme.spacing(6)};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-`;
+
 
 function toFormValues(product: InvoiceProducts): any {
  
@@ -143,10 +108,10 @@ export function EditDetectedProductPanel({
   return (
     <Backdrop onClick={onClose}>
       <Panel onClick={(event) => event.stopPropagation()}>
-        <Header>
-          <Title>Edit Imported Product</Title>
-        </Header>
-        <Body>
+        <PanelHeader>
+          <PanelTitle>Edit Imported Product</PanelTitle>
+        </PanelHeader>
+        <PanelBody>
           {/* {product.warnings.length > 0 && <ImportWarning warnings={product.warnings} />} */}
 
           {matchedProduct && (
@@ -165,15 +130,15 @@ export function EditDetectedProductPanel({
             onChange={handleChange}
             disableQuantity={isExisting}
           />
-        </Body>
-        <Footer>
+        </PanelBody>
+        <PanelFooter>
           <Button type="button" $variant="secondary" $fullWidth onClick={onClose}>
             Cancel
           </Button>
           <Button type="button" $fullWidth onClick={handleSave}>
             Save
           </Button>
-        </Footer>
+        </PanelFooter>
       </Panel>
     </Backdrop>
   );

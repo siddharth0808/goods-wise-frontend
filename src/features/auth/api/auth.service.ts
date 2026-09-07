@@ -2,6 +2,7 @@ import * as cognitoService from '../../../services/cognito/cognito.service';
 import { AUTH_ERROR_MESSAGES } from '../auth.constants';
 import type {
   AuthUser,
+  ConfirmPasswordResetParams,
   ConfirmSignupParams,
   LoginCredentials,
   SignupCredentials,
@@ -47,6 +48,22 @@ export async function resendConfirmationCode(email: string): Promise<void> {
     await cognitoService.resendConfirmationCode(email);
   } catch (error) {
     throw new Error(toMessage(error, 'Could not resend the code. Please try again.'));
+  }
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  try {
+    await cognitoService.forgotPassword(email);
+  } catch (error) {
+    throw new Error(toMessage(error, AUTH_ERROR_MESSAGES.genericForgotPasswordFailure));
+  }
+}
+
+export async function confirmPasswordReset(params: ConfirmPasswordResetParams): Promise<void> {
+  try {
+    await cognitoService.confirmForgotPassword(params.email, params.code, params.newPassword);
+  } catch (error) {
+    throw new Error(toMessage(error, AUTH_ERROR_MESSAGES.genericResetPasswordFailure));
   }
 }
 
