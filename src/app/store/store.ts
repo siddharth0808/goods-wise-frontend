@@ -4,6 +4,8 @@ import businessReducer from '../../features/business/store/businessSlice';
 import inventoryReducer from '../../features/inventory/store/inventorySlice';
 import transactionReducer from '../../features/inventory/store/transactionSlice';
 import importReducer from '../../features/import/store/importSlice';
+import salesReducer from '../../features/sales/store/salesSlice';
+import posReducer from '../../features/sales/store/posSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +14,8 @@ export const store = configureStore({
     inventory: inventoryReducer,
     transactions: transactionReducer,
     import: importReducer,
+    sales: salesReducer,
+    pos: posReducer,
   },
 });
 

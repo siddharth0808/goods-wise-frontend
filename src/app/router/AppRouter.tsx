@@ -17,6 +17,10 @@ import AdjustStockPage from '../../features/inventory/pages/AdjustStockPage';
 import InventoryHistoryPage from '../../features/inventory/pages/InventoryHistoryPage';
 import ImportWizardPage from '../../features/import/pages/ImportWizardPage';
 import ImportHistoryPage from '../../features/import/pages/ImportHistoryPage';
+import SalesListPage from '../../features/sales/pages/SalesListPage';
+import CreateSalePage from '../../features/sales/pages/CreateSalePage';
+import CheckoutPage from '../../features/sales/pages/CheckoutPage';
+import SaleDetailsPage from '../../features/sales/pages/SaleDetailsPage';
 import ProfilePage from '../../features/profile/pages/ProfilePage';
 import { useAppSelector } from '../store/hooks';
 
@@ -54,17 +58,6 @@ export function AppRouter() {
           </PublicRoute>
         }
       />
-
-      {/* Authenticated, business-setup-not-required */}
-      <Route
-        path="/business-setup"
-        element={
-          <AuthenticatedRoute>
-            <BusinessSetupPage />
-          </AuthenticatedRoute>
-        }
-      />
-
       <Route
         path="/forgot-password"
         element={
@@ -79,6 +72,16 @@ export function AppRouter() {
           <PublicRoute>
             <ResetPasswordPage />
           </PublicRoute>
+        }
+      />
+
+      {/* Authenticated, business-setup-not-required */}
+      <Route
+        path="/business-setup"
+        element={
+          <AuthenticatedRoute>
+            <BusinessSetupPage />
+          </AuthenticatedRoute>
         }
       />
 
@@ -169,6 +172,46 @@ export function AppRouter() {
           <BusinessSetupRoute>
             <AppLayout>
               <ImportHistoryPage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <SalesListPage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales/new"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <CreateSalePage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales/checkout"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <CheckoutPage />
+            </AppLayout>
+          </BusinessSetupRoute>
+        }
+      />
+      <Route
+        path="/sales/:saleId"
+        element={
+          <BusinessSetupRoute>
+            <AppLayout>
+              <SaleDetailsPage />
             </AppLayout>
           </BusinessSetupRoute>
         }
