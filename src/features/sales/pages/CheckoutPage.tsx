@@ -217,17 +217,19 @@ export default function CheckoutPage() {
 
       <SplitLayout>
         <Card>
-          <SectionTitle>Sale Items</SectionTitle>
+          <SectionTitle>Order Summary ({cart.length} items)</SectionTitle>
           <div>
+            <div> Product</div>
+            <div> Quantity</div>
+            <div> Price</div>
+            <div> Total</div>
             {cart.map((item) => (
-              <CartItemRow
-                key={item.productId}
-                item={item}
-                onIncrement={() => dispatch(incrementCartItem(item.productId))}
-                onDecrement={() => dispatch(decrementCartItem(item.productId))}
-                onChangeQuantity={(quantity) => dispatch(setCartItemQuantity({ productId: item.productId, quantity }))}
-                onRemove={() => dispatch(removeCartItem(item.productId))}
-              />
+              <>
+                <div>{item.productName}</div>
+                <div>{item.quantity}</div>
+                <div>${item.unitPrice.toFixed(2)}</div>
+                <div>${(item.unitPrice * item.quantity).toFixed(2)}</div>
+              </>
             ))}
           </div>
         </Card>
