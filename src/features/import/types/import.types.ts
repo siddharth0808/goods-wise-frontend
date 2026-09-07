@@ -28,7 +28,9 @@ export interface DetectedProduct {
   rate: number;
   mrp: number;
   amount: number;
-   
+  expiryDate:any;
+  batchNumber: string;
+  manufacturer: string;
 }
 
 export interface AnalyzeInvoiceResult {

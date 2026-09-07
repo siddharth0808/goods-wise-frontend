@@ -1,6 +1,7 @@
-import styled from 'styled-components';
-import type { InvoiceProducts } from '../types/import.types';
-import { InvoiceReviewRow } from './InvoiceReviewRow';
+import styled from "styled-components";
+import type { InvoiceProducts } from "../types/import.types";
+import { InvoiceReviewRow } from "./InvoiceReviewRow";
+import { media } from "../../../styles/breakpoints";
 
 const TableWrapper = styled.div`
   width: 100%;
@@ -10,6 +11,10 @@ const TableWrapper = styled.div`
   box-shadow: ${({ theme }) => theme.shadow.card};
   overflow: hidden;
   overflow-x: auto;
+
+   ${() => media.tabletDown`
+      display: none;
+    `}
 `;
 
 const Table = styled.table`
@@ -22,9 +27,9 @@ const Thead = styled.thead`
   background: ${({ theme }) => theme.colors.background};
 `;
 
-const Th = styled.th<{ $align?: 'left' | 'right' }>`
+const Th = styled.th<{ $align?: "left" | "right" }>`
   padding: ${({ theme }) => theme.spacing(3)} ${({ theme }) => theme.spacing(4)};
-  text-align: ${({ $align = 'left' }) => $align};
+  text-align: ${({ $align = "left" }) => $align};
   font-size: ${({ theme }) => theme.font.size.xs};
   font-weight: ${({ theme }) => theme.font.weight.semibold};
   color: ${({ theme }) => theme.colors.textSecondary};
@@ -32,6 +37,12 @@ const Th = styled.th<{ $align?: 'left' | 'right' }>`
   letter-spacing: 0.04em;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   white-space: nowrap;
+`;
+
+const StickyTh = styled(Th)`
+  position: sticky;
+  right: 0;
+  background: ${({ theme }) => theme.colors.background};
 `;
 
 interface InvoiceReviewTableProps {
@@ -52,14 +63,6 @@ export function InvoiceReviewTable({
       <Table>
         <Thead>
           <tr>
-            {/* <Th>
-              <input
-                type="checkbox"
-                checked={allSelected}
-                onChange={(event) => onToggleSelectAll(event.target.checked)}
-                aria-label="Select all products"
-              />
-            </Th> */}
             <Th>Status</Th>
             <Th>Product</Th>
             <Th $align="right">Quantity</Th>
@@ -68,10 +71,10 @@ export function InvoiceReviewTable({
 
             <Th $align="right">Rate</Th>
             <Th $align="right">MRP</Th>
-             <Th $align="right">Expiry Date</Th>
-             <Th $align="right">Total Amt.</Th>
+            <Th $align="right">Expiry Date</Th>
+            <Th $align="right">Total Amt.</Th>
 
-            <Th $align="right">Actions</Th>
+            <StickyTh aria-label="Actions" />
           </tr>
         </Thead>
         <tbody>

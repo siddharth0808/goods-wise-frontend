@@ -72,3 +72,13 @@ export const FormError = styled.p`
   font-size: ${({ theme }) => theme.font.size.sm};
   margin: 0;
 `;
+
+export const FormSuccess = styled.p`
+  background: ${({ theme }) => theme.colors.successSoft};
+  border: 1px solid ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: ${({ theme }) => theme.spacing(3)};
+  font-size: ${({ theme }) => theme.font.size.sm};
+  margin: 0;
+`;

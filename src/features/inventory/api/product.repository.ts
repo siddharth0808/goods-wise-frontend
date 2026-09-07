@@ -16,3 +16,7 @@ export function getProductById(productId: string): Promise<Product> {
 export function updateProduct(productId: string, payload: UpdateProductRequest): Promise<Product> {
   return apiRequest<Product>(`/products/${productId}`, { method: 'PATCH', body: payload });
 }
+
+export function deleteProduct(productId: string): Promise<void> {
+  return apiRequest<void>(`/products/${productId}`, { method: 'DELETE' });
+}

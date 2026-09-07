@@ -3,6 +3,7 @@ import { resetApplicationState } from '../../../app/store/actions';
 import * as authService from '../api/auth.service';
 import type {
   AuthState,
+  ConfirmPasswordResetParams,
   ConfirmSignupParams,
   LoginCredentials,
   SignupCredentials,
@@ -61,6 +62,28 @@ export const resendConfirmationCode = createAsyncThunk(
       await authService.resendConfirmationCode(email);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Could not resend code');
+    }
+  }
+);
+
+export const requestPasswordReset = createAsyncThunk(
+  'auth/requestPasswordReset',
+  async (email: string, { rejectWithValue }) => {
+    try {
+      await authService.requestPasswordReset(email);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Could not send reset code');
+    }
+  }
+);
+
+export const confirmPasswordReset = createAsyncThunk(
+  'auth/confirmPasswordReset',
+  async (params: ConfirmPasswordResetParams, { rejectWithValue }) => {
+    try {
+      await authService.confirmPasswordReset(params);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Could not reset password');
     }
   }
 );
@@ -144,6 +167,30 @@ const authSlice = createSlice({
       .addCase(resendConfirmationCode.rejected, (state, action) => {
         state.isSubmitting = false;
         state.error = (action.payload as string) ?? 'Could not resend code';
+      })
+      // Request password reset (send code)
+      .addCase(requestPasswordReset.pending, (state) => {
+        state.isSubmitting = true;
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.fulfilled, (state) => {
+        state.isSubmitting = false;
+      })
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.isSubmitting = false;
+        state.error = (action.payload as string) ?? 'Could not send reset code';
+      })
+      // Confirm password reset (code + new password)
+      .addCase(confirmPasswordReset.pending, (state) => {
+        state.isSubmitting = true;
+        state.error = null;
+      })
+      .addCase(confirmPasswordReset.fulfilled, (state) => {
+        state.isSubmitting = false;
+      })
+      .addCase(confirmPasswordReset.rejected, (state, action) => {
+        state.isSubmitting = false;
+        state.error = (action.payload as string) ?? 'Could not reset password';
       })
       // Sign out: go straight to "unauthenticated" (not "initializing") so
       // route guards redirect immediately without re-checking the session.

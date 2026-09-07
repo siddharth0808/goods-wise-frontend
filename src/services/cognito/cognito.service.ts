@@ -62,15 +62,9 @@ export function resendConfirmationCode(email: string): Promise<void> {
   });
 }
 
-export function signIn(
-  email: string,
-  password: string,
-): Promise<CognitoUserSession> {
+export function signIn(email: string, password: string): Promise<CognitoUserSession> {
   const user = new CognitoUser({ Username: email, Pool: userPool });
-  const authDetails = new AuthenticationDetails({
-    Username: email,
-    Password: password,
-  });
+  const authDetails = new AuthenticationDetails({ Username: email, Password: password });
 
   return new Promise((resolve, reject) => {
     user.authenticateUser(authDetails, {
@@ -82,6 +76,31 @@ export function signIn(
 
 export function signOut(): void {
   getCurrentCognitoUser()?.signOut();
+}
+
+// Step 1 of the Forgot Password flow: asks Cognito to email a verification
+// code to the account. Cognito's SDK intentionally succeeds even for
+// unknown emails (to avoid leaking which addresses have accounts), so the
+// UI should show the same "check your email" message regardless.
+export function forgotPassword(email: string): Promise<void> {
+  const user = new CognitoUser({ Username: email, Pool: userPool });
+  return new Promise((resolve, reject) => {
+    user.forgotPassword({
+      onSuccess: () => resolve(),
+      onFailure: (err) => reject(err),
+    });
+  });
+}
+
+// Step 2: submits the emailed code plus a new password.
+export function confirmForgotPassword(email: string, code: string, newPassword: string): Promise<void> {
+  const user = new CognitoUser({ Username: email, Pool: userPool });
+  return new Promise((resolve, reject) => {
+    user.confirmPassword(code, newPassword, {
+      onSuccess: () => resolve(),
+      onFailure: (err) => reject(err),
+    });
+  });
 }
 
 // Returns the current, still-valid session (refreshing silently if the

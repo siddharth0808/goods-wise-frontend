@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import type { Product } from '../types/product.types';
-import { StatusBadge } from '../../../components/common/StatusBadge';
-import { ActionsMenu } from '../../../components/common/ActionsMenu';
-import { formatCurrency, formatDate } from '../../../utils/formatters';
-import { getStockStatusMeta } from '../utils/stockStatus';
-import { media } from '../../../styles/breakpoints';
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import type { Product } from "../types/product.types";
+import { StatusBadge } from "../../../components/common/StatusBadge";
+import { formatCurrency, formatDate } from "../../../utils/formatters";
+import { getStockStatusMeta } from "../utils/stockStatus";
+import { media } from "../../../styles/breakpoints";
 
 const CardList = styled.div`
   display: none;
@@ -97,29 +96,32 @@ export function ProductCardList({ products }: ProductCardListProps) {
   return (
     <CardList>
       {products.map((product) => {
-        const statusMeta = getStockStatusMeta(product.currentStock, product.minimumStock);
+        const statusMeta = getStockStatusMeta(
+          product.currentStock,
+          product.minimumStock,
+        );
         return (
-          <Card key={product.id} onClick={() => navigate(`/products/${product.id}`)}>
+          <Card
+            key={product.id}
+            onClick={() => navigate(`/products/${product.id}`)}
+          >
             <TopRow>
               <NameBlock>
                 <Name>{product.name}</Name>
                 <Meta>
-                  {[product.batchNumber, product.manufacturer, formatDate(product.expiryDate)].filter(Boolean).join(' · ') || '—'}
+                  {[
+                    product.batchNumber,
+                    product.manufacturer,
+                    formatDate(product.expiryDate),
+                  ]
+                    .filter(Boolean)
+                    .join(" · ") || "—"}
                 </Meta>
               </NameBlock>
               <BadgeRow>
-                <StatusBadge tone={statusMeta.tone}>{statusMeta.label}</StatusBadge>
-                <div onClick={(event) => event.stopPropagation()}>
-                  <ActionsMenu
-                    label={`Actions for ${product.name}`}
-                    items={[
-                      { label: 'View Details', onSelect: () => navigate(`/products/${product.id}`) },
-                      { label: 'Adjust Stock', onSelect: () => navigate(`/products/${product.id}/adjust-stock`) },
-                      { label: 'View History', onSelect: () => navigate(`/products/${product.id}/history`) },
-                      { label: 'Edit Product', onSelect: () => navigate(`/products/${product.id}/edit`) },
-                    ]}
-                  />
-                </div>
+                <StatusBadge tone={statusMeta.tone}>
+                  {statusMeta.label}
+                </StatusBadge>
               </BadgeRow>
             </TopRow>
             <DetailsGrid>

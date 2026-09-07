@@ -11,6 +11,9 @@ export interface DetectedProductFormValues {
   rate: string;
   mrp: string;
   amount: string;
+  expiryDate: any;
+  batchNumber: string;
+  manufacturer: string;
 }
 
 interface NewProductFormProps {
@@ -35,8 +38,11 @@ export function NewProductForm({
   const handleAmount =
     (field: keyof DetectedProductFormValues) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newAmount =  field === 'rate' ? Number(event.target.value)* Number(values.quantity) :Number(event.target.value)* Number(values.rate)
-      onChange('amount', newAmount.toString())
+      const newAmount =
+        field === "rate"
+          ? Number(event.target.value) * Number(values.quantity)
+          : Number(event.target.value) * Number(values.rate);
+      onChange("amount", newAmount.toString());
       return onChange(field, event.target.value);
     };
 
@@ -49,8 +55,8 @@ export function NewProductForm({
       >
         <Input
           id="detected-name"
-          disabled
           value={values.name}
+          disabled={disableQuantity}
           onChange={handleChange("name")}
           $hasError={!!errors.name}
         />
@@ -70,7 +76,6 @@ export function NewProductForm({
             value={values.quantity}
             onChange={handleAmount("quantity")}
             $hasError={!!errors.quantity}
-            disabled={disableQuantity}
           />
         </FormField>
         <FormField label="MRP." htmlFor="detected-mrp">
@@ -117,7 +122,32 @@ export function NewProductForm({
             $hasError={!!errors.amount}
           />
         </FormField>
+        <FormField label="Expriy Date" htmlFor="expiryDate">
+          <Input
+            id="expiryDate"
+            type="date"
+            value={values.expiryDate}
+            onChange={handleChange("expiryDate")}
+          />
+        </FormField>
+
+        <FormField label="Batch Number" htmlFor="batchNumber">
+          <Input
+            id="batchNumber"
+            type="text"
+            value={values.batchNumber}
+            onChange={handleChange("batchNumber")}
+          />
+        </FormField>
       </FieldRow>
+      <FormField label="Manufacturer" htmlFor="manufacturer">
+        <Input
+          id="manufacturer"
+          type="text"
+          value={values.manufacturer}
+          onChange={handleChange("manufacturer")}
+        />
+      </FormField>
     </FieldStack>
   );
 }

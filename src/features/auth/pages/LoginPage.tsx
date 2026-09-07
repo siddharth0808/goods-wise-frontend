@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, PageContainer } from '../../../components/common/PageContainer';
 import { Logo } from '../../../components/layout/Logo';
 import { Button } from '../../../components/common/Button';
@@ -17,6 +17,7 @@ import {
   AuthTitleBlock,
   Form,
   FormError,
+  FormSuccess,
   InlineLink,
   LinksRow,
 } from '../components/AuthCard.styles';
@@ -26,9 +27,16 @@ interface FormValues {
   password: string;
 }
 
+interface LocationState {
+  notice?: string;
+}
+
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const notice = (location.state as LocationState | null)?.notice;
+
   const isSubmitting = useAppSelector((state) => state.auth.isSubmitting);
   const authError = useAppSelector((state) => state.auth.error);
 
@@ -76,6 +84,7 @@ export default function LoginPage() {
           </AuthTitleBlock>
         </AuthHeader>
 
+        {notice && !authError && <FormSuccess role="status">{notice}</FormSuccess>}
         {authError && <FormError role="alert">{authError}</FormError>}
 
         <Form as="div">
@@ -84,13 +93,22 @@ export default function LoginPage() {
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="admin@goodsWise.co"
+              placeholder="admin@inventorystack.co"
               value={values.email}
               onChange={handleChange('email')}
               $hasError={!!fieldErrors.email}
             />
           </FormField>
-          <FormField label="Password" htmlFor="password" error={fieldErrors.password}>
+          <FormField
+            label="Password"
+            htmlFor="password"
+            error={fieldErrors.password}
+            labelAction={
+              <InlineLink type="button" onClick={() => navigate('/forgot-password')}>
+                Forgot password?
+              </InlineLink>
+            }
+          >
             <PasswordInput
               id="password"
               autoComplete="current-password"
