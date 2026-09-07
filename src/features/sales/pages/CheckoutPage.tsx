@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { PageHeader } from '../../../components/layout/PageHeader';
 import { Button } from '../../../components/common/Button';
+import { FormField } from '../../../components/common/FormField';
+import { Input } from '../../../components/common/Input';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
-import { clearCreateError, confirmSale, decrementCartItem, incrementCartItem, removeCartItem, resetPos, setCartItemQuantity, setDiscount, setPaymentMethod } from '../store/posSlice';
+import { clearCreateError, confirmSale, decrementCartItem, incrementCartItem, removeCartItem, resetPos, setCartItemQuantity, setCustomerDetails, setDiscount, setPaymentMethod } from '../store/posSlice';
 import { CartItemRow } from '../components/CartItemRow';
 import { SaleSummary } from '../components/SaleSummary';
 import { DiscountInput } from '../components/DiscountInput';
@@ -16,6 +18,7 @@ import { ImportProgress } from '../../import/components/ImportProgress';
 import { calculateDiscountAmount, calculateSubtotal, calculateTotal, calculateTotalUnits, isCartValid } from '../utils/saleMath';
 import { media } from '../../../styles/breakpoints';
 import type { ProcessingStep } from '../../import/types/import.types';
+import { isValidEmail, isValidPhone } from '../../../utils/validation';
 
 const Content = styled.div`
   display: flex;
@@ -73,6 +76,11 @@ const PaymentNotice = styled.p`
   color: ${({ theme }) => theme.colors.danger};
 `;
 
+const CustomerFields = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing(4)};
+`;
+
 const PROCESSING_STEP_LABELS = ['Validating products', 'Checking stock', 'Completing sale'];
 
 function buildSteps(progress: number): ProcessingStep[] {
@@ -85,12 +93,13 @@ function buildSteps(progress: number): ProcessingStep[] {
 export default function CheckoutPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { cart, discount, paymentMethod, createStatus, createError, errorCode, completedSale } = useAppSelector(
+  const { cart, discount, paymentMethod, customer, createStatus, createError, errorCode, completedSale } = useAppSelector(
     (state) => state.pos
   );
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [paymentMissing, setPaymentMissing] = useState(false);
+  const [customerErrors, setCustomerErrors] = useState<{ phone?: string; email?: string }>({});
   const [processingProgress, setProcessingProgress] = useState(0);
 
   // A cart-less checkout can only happen via a direct URL visit or a page
@@ -122,6 +131,15 @@ export default function CheckoutPage() {
       setPaymentMissing(true);
       return;
     }
+    const nextCustomerErrors: { phone?: string; email?: string } = {};
+    if (customer.phone?.trim() && !isValidPhone(customer.phone)) {
+      nextCustomerErrors.phone = 'Enter a valid phone number.';
+    }
+    if (customer.email?.trim() && !isValidEmail(customer.email)) {
+      nextCustomerErrors.email = 'Enter a valid email address.';
+    }
+    setCustomerErrors(nextCustomerErrors);
+    if (Object.keys(nextCustomerErrors).length > 0) return;
     setPaymentMissing(false);
     setShowConfirm(true);
   };
@@ -215,6 +233,46 @@ export default function CheckoutPage() {
         </Card>
 
         <RightColumn>
+          <Card>
+            <SectionTitle>Customer Details (Optional)</SectionTitle>
+            <CustomerFields>
+              <FormField label="Name" htmlFor="customer-name">
+                <Input
+                  id="customer-name"
+                  value={customer.name ?? ''}
+                  onChange={(event) => dispatch(setCustomerDetails({ name: event.target.value }))}
+                  placeholder="Customer name"
+                />
+              </FormField>
+              <FormField label="Phone" htmlFor="customer-phone" error={customerErrors.phone}>
+                <Input
+                  id="customer-phone"
+                  type="tel"
+                  value={customer.phone ?? ''}
+                  onChange={(event) => {
+                    dispatch(setCustomerDetails({ phone: event.target.value }));
+                    if (customerErrors.phone) setCustomerErrors((errors) => ({ ...errors, phone: undefined }));
+                  }}
+                  placeholder="Customer phone"
+                  $hasError={Boolean(customerErrors.phone)}
+                />
+              </FormField>
+              <FormField label="Email" htmlFor="customer-email" error={customerErrors.email}>
+                <Input
+                  id="customer-email"
+                  type="email"
+                  value={customer.email ?? ''}
+                  onChange={(event) => {
+                    dispatch(setCustomerDetails({ email: event.target.value }));
+                    if (customerErrors.email) setCustomerErrors((errors) => ({ ...errors, email: undefined }));
+                  }}
+                  placeholder="Customer email"
+                  $hasError={Boolean(customerErrors.email)}
+                />
+              </FormField>
+            </CustomerFields>
+          </Card>
+
           <Card>
             <SectionTitle>Discount</SectionTitle>
             <DiscountInput discount={discount} onApply={(value) => dispatch(setDiscount(value))} />

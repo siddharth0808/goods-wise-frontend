@@ -6,8 +6,6 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import SignupPage from '../../features/auth/pages/SignupPage';
 import EmailVerificationPage from '../../features/auth/pages/EmailVerificationPage';
-import ForgotPasswordPage from '../../features/auth/pages/ForgotPasswordPage';
-import ResetPasswordPage from '../../features/auth/pages/ResetPasswordPage';
 import BusinessSetupPage from '../../features/business/pages/BusinessSetupPage';
 import InventoryListPage from '../../features/inventory/pages/InventoryListPage';
 import AddProductPage from '../../features/inventory/pages/AddProductPage';
@@ -58,23 +56,6 @@ export function AppRouter() {
           </PublicRoute>
         }
       />
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <ForgotPasswordPage />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/reset-password"
-        element={
-          <PublicRoute>
-            <ResetPasswordPage />
-          </PublicRoute>
-        }
-      />
-
       {/* Authenticated, business-setup-not-required */}
       <Route
         path="/business-setup"

@@ -4,7 +4,7 @@ import { stockAdjusted } from '../../inventory/store/inventoryActions';
 import * as saleRepository from '../api/sale.repository';
 import { ApiError } from '../../../services/api/apiError';
 import { primeActiveSale } from './salesSlice';
-import type { Discount, PaymentMethod, PosState } from '../types/sale.types';
+import type { CustomerDetails, Discount, PaymentMethod, PosState } from '../types/sale.types';
 import type { Product } from '../../inventory/types/product.types';
 
 const initialState: PosState = {
@@ -14,6 +14,7 @@ const initialState: PosState = {
   subTotalAmt:null,
   totalAmt:null,
   paymentMethod: null,
+  customer: {},
   createStatus: 'idle',
   createError: null,
   errorCode: undefined,
@@ -28,7 +29,7 @@ export const confirmSale = createAsyncThunk(
   'pos/confirmSale',
   async (_: void, { getState, dispatch, rejectWithValue }) => {
     const state = getState() as { pos: PosState };
-    const { cart, discount, paymentMethod } = state.pos;
+    const { cart, discount, paymentMethod, customer } = state.pos;
 
     if (!paymentMethod) {
       return rejectWithValue('Select a payment method to continue.');
@@ -45,6 +46,7 @@ export const confirmSale = createAsyncThunk(
         subTotalAmt: cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
         totalAmt: cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0) - (discount?.value || 0),
         paymentMethod,
+        customer: Object.values(customer).some((value) => value?.trim()) ? customer : undefined,
       });
 
       // The backend already decremented stock and wrote the SALE /
@@ -127,6 +129,9 @@ const posSlice = createSlice({
         state.createError = null;
       }
     },
+    setCustomerDetails(state, action: PayloadAction<Partial<CustomerDetails>>) {
+      state.customer = { ...state.customer, ...action.payload };
+    },
     clearCreateError(state) {
       state.createError = null;
       state.errorCode = undefined;
@@ -170,6 +175,7 @@ export const {
   removeCartItem,
   setDiscount,
   setPaymentMethod,
+  setCustomerDetails,
   clearCreateError,
   resetPos,
 } = posSlice.actions;
