@@ -101,7 +101,7 @@ const PanelFooterContainer = styled(PanelFooter)`
 `;
 
 const PanelBodyContainer = styled(PanelBody)`
-  min-height: 460px;
+  min-height: 265px;
   overflow-y: auto;
 `;
 
